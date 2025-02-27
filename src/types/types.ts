@@ -30,10 +30,10 @@ export interface Rol {
   }
   
   // Entidad Empresa
-  export interface Empresa {
+export interface Empresa {
     id_empresa: number;
     nombre: string;
-    ruc: string;
+    ruc: number;
     direccion: string;
     telefono: string;
     email_contacto: string;
@@ -48,6 +48,7 @@ export interface Rol {
     nombre: string;
     descripcion: string;
     fecha_creacion: string;
+    productos?: Producto[];
   }
   
   // Entidad Producto
@@ -56,33 +57,75 @@ export interface Rol {
     codigo_barras: string;
     nombre: string;
     descripcion: string;
-    id_categoria: number;
+    id_categoria: Categoria;
     precio_compra: number;
     precio_venta: number;
     stock_minimo: number;
     stock_maximo: number;
-    id_empresa: number;
-    id_proveedor: number;
+    id_empresa: Empresa;
+    id_proveedor: Proveedor | null;
     fecha_creacion: string;
     ultima_actualizacion: string;
+    alertas?: AlertaStock[];
+    detalles?: DetallePedido[];
+    movimientos?: MovimientoInventario[];
   }
   
   // Entidad Inventario
   export interface Inventario {
     id_inventario: number;
-    id_empresa: number;
+    id_empresa: Empresa;
     fecha_actualizacion: string;
   }
   
   // Entidad Movimiento_Inventario
   export interface MovimientoInventario {
     id_movimiento: number;
-    id_producto: number;
+    id_producto: Producto;
     tipo_movimiento: "entrada" | "salida" | "ajuste";
     cantidad: number;
     fecha_movimiento: string;
     motivo: string;
-    id_usuario: number;
+    id_usuario: Usuario;
     costo_unitario: number;
     ubicacion: string;
+  }
+  
+  // Entidad Pedido
+  export interface Pedido {
+    id_pedido: number;
+    id_empresa: Empresa;
+    fecha_solicitud: string;
+    fecha_entrega: string;
+    estado: "pendiente" | "entregado" | "cancelado";
+    detalles?: DetallePedido[];
+  }
+  
+  // Entidad Detalle_Pedido
+  export interface DetallePedido {
+    id_detalle_pedido: number;
+    id_pedido: Pedido;
+    id_producto: Producto;
+    cantidad: number;
+    precio_unitario: string; // Devuelto como string en el backend
+  }
+  
+  // Entidad Proveedor
+  export interface Proveedor {
+    id_proveedor: number;
+    nombre: string;
+    contacto: string;
+    telefono: string;
+    email: string;
+    direccion: string;
+    fecha_creacion: string;
+  }
+  
+  // Entidad Alerta_Stock
+  export interface AlertaStock {
+    id_alerta: number;
+    id_producto: Producto;
+    nivel_minimo: number;
+    estado: boolean;
+    fecha_creacion: string;
   }

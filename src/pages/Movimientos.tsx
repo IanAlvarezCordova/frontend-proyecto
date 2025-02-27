@@ -1,26 +1,21 @@
 // src/pages/Movimientos.tsx
 import { useState } from "react";
-import { Box, Heading, Button } from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/toast";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from "@chakra-ui/modal";
-import { MovementList } from "../components/movimientos/MovementList";
+import { Box, Heading } from "@chakra-ui/react";
+import { MovementHistory } from "../components/movimientos/MovementHistory";
 import { MovementForm } from "../components/movimientos/MovementForm";
+import { MovementFilter } from "../components/movimientos/MovementFilter";
 
 export const Movimientos: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const toast = useToast();
+  const [filters, setFilters] = useState<{ type?: string; date?: string }>({});
 
   const handleSuccess = () => {
     setRefresh((prev) => !prev);
-    setIsOpen(false);
-    toast({
-      title: "Éxito",
-      description: "Movimiento creado correctamente.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+  };
+
+  const handleFilter = (newFilters: { type?: string; date?: string }) => {
+    setFilters(newFilters);
+    setRefresh((prev) => !prev); // Simplificación para el MVP
   };
 
   return (
@@ -28,20 +23,9 @@ export const Movimientos: React.FC = () => {
       <Heading size="lg" mb={6}>
         Movimientos de Inventario
       </Heading>
-      <Button colorScheme="teal" mb={4} onClick={() => setIsOpen(true)}>
-        Crear Movimiento
-      </Button>
-      <MovementList />
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="lg">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Crear Movimiento</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <MovementForm onSuccess={handleSuccess} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <MovementHistory refresh={refresh} />
+      <MovementForm onSuccess={handleSuccess} />
+      <MovementFilter onFilter={handleFilter} />
     </Box>
   );
 };

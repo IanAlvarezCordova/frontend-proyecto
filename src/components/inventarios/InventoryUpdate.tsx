@@ -1,20 +1,20 @@
-// src/components/movimientos/MovementForm.tsx
+// src/components/inventarios/InventoryUpdate.tsx
 import { useState, useEffect } from "react";
 import { Box, Button, Input, Text } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/form-control";
-import { VStack } from "@chakra-ui/layout";
 import { Select } from "@chakra-ui/select";
+import { VStack } from "@chakra-ui/layout";
 import { useForm } from "react-hook-form";
 import { createMovimiento } from "../../services/movimiento.service";
 import { getProductos } from "../../services/producto.service";
 import { MovimientoInventario, Producto, Usuario } from "../../types/types";
 
-interface MovementFormProps {
+interface InventoryUpdateProps {
   onSuccess: () => void;
 }
 
-export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
+export const InventoryUpdate: React.FC<InventoryUpdateProps> = ({ onSuccess }) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<Partial<MovimientoInventario>>({});
   const [productos, setProductos] = useState<Producto[]>([]);
   const toast = useToast();
@@ -41,7 +41,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
     try {
       await createMovimiento({
         ...data,
-        id_usuario: { id_usuario: 1 } as Usuario, // Objeto mínimo para el MVP
+        id_usuario: { id_usuario: 1 } as Usuario, // Pasamos un objeto Usuario mínimo para el MVP
       });
       reset({
         id_producto: undefined,
@@ -70,7 +70,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
 
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
-      <Text fontWeight="bold" mb={4}>Registrar Movimiento</Text>
+      <Text fontWeight="bold" mb={4}>Actualizar Inventario</Text>
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing={4}>
           <FormControl isInvalid={!!errors.id_producto}>
@@ -106,7 +106,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
             <FormErrorMessage>{errors.motivo?.message as string}</FormErrorMessage>
           </FormControl>
           <Button type="submit" colorScheme="teal" width="full">
-            Registrar
+            Actualizar Stock
           </Button>
         </VStack>
       </Box>

@@ -1,50 +1,65 @@
 // src/components/movimientos/MovementHistory.tsx
 import { useEffect, useState } from "react";
-import { Box, TableCaption } from "@chakra-ui/react";
-import { Table, Tbody, Thead, Tr, Td, Th } from "@chakra-ui/table";
+import { Box } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/toast";
+import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell, TableColumnHeader } from "@chakra-ui/react";
 import { getMovimientos } from "../../services/movimiento.service";
-import { getProductos } from "../../services/producto.service";
-import { MovimientoInventario, Producto } from "../../types/types";
+import { MovimientoInventario } from "../../types/types";
 
-export const MovementHistory: React.FC = () => {
+interface MovementHistoryProps {
+  refresh: boolean;
+}
+
+export const MovementHistory: React.FC<MovementHistoryProps> = ({ refresh }) => {
   const [movimientos, setMovimientos] = useState<MovimientoInventario[]>([]);
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const toast = useToast();
+
+  const fetchData = async () => {
+    try {
+      const movimientosData = await getMovimientos();
+      setMovimientos(movimientosData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los movimientos.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const movs = await getMovimientos();
-      const prods = await getProductos();
-      setMovimientos(movs);
-      setProductos(prods);
-    };
     fetchData();
-  }, []);
+  }, [refresh]);
 
   return (
-    <Box mt={6}>
-      <Table variant="striped" colorScheme="gray">
+    <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
+      <Table.Root size="sm" striped colorScheme="gray">
         <TableCaption>Historial de Movimientos</TableCaption>
-        <Thead>
-          <Tr>
-            <Th>ID Movimiento</Th>
-            <Th>Producto</Th>
-            <Th>Tipo</Th>
-            <Th>Cantidad</Th>
-            <Th>Fecha</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+        <TableHeader>
+          <TableRow>
+            <TableColumnHeader>ID</TableColumnHeader>
+            <TableColumnHeader>Producto</TableColumnHeader>
+            <TableColumnHeader>Tipo</TableColumnHeader>
+            <TableColumnHeader>Cantidad</TableColumnHeader>
+            <TableColumnHeader>Fecha</TableColumnHeader>
+            <TableColumnHeader>Motivo</TableColumnHeader>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {movimientos.map((mov) => (
-            <Tr key={mov.id_movimiento}>
-              <Td>{mov.id_movimiento}</Td>
-              <Td>{productos.find(p => p.id_producto === mov.id_producto)?.nombre || mov.id_producto}</Td>
-              <Td>{mov.tipo_movimiento}</Td>
-              <Td>{mov.cantidad}</Td>
-              <Td>{new Date(mov.fecha_movimiento).toLocaleString()}</Td>
-            </Tr>
+            <TableRow key={mov.id_movimiento}>
+              <TableCell>{mov.id_movimiento}</TableCell>
+              <TableCell>{mov.id_producto?.nombre || mov.id_producto?.id_producto || "-"}</TableCell>
+              <TableCell>{mov.tipo_movimiento}</TableCell>
+              <TableCell>{mov.cantidad}</TableCell>
+              <TableCell>{new Date(mov.fecha_movimiento).toLocaleString()}</TableCell>
+              <TableCell>{mov.motivo}</TableCell>
+            </TableRow>
           ))}
-        </Tbody>
-      </Table>
+        </TableBody>
+      </Table.Root>
     </Box>
   );
 };

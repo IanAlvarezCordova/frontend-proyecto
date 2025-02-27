@@ -8,6 +8,7 @@ import { Usuarios } from "./pages/Usuarios";
 import { Productos } from "./pages/Productos";
 import { Inventario } from "./pages/Inventario";
 import { Movimientos } from "./pages/Movimientos";
+import { Pedidos } from "./pages/Pedidos";
 import { system } from "@chakra-ui/react/preset";
 
 const App: React.FC = () => {
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/productos" element={<Productos />} />
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/movimientos" element={<Movimientos />} />
+          <Route path="/pedidos" element={<Pedidos />} />
         </Routes>
       </Router>
     </ChakraProvider>

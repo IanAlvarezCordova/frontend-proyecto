@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { Table } from "@chakra-ui/react";
+import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell, TableColumnHeader } from "@chakra-ui/react";
 import { getMovimientos } from "../../services/movimiento.service";
 import { getProductos } from "../../services/producto.service";
 import { MovimientoInventario, Producto } from "../../types/types";
@@ -35,28 +35,28 @@ export const MovementList: React.FC = () => {
 
   return (
     <Box mt={6}>
-      <Table.Root variant="line" colorScheme="gray">
-        <Table.Caption>Movimientos de Inventario</Table.Caption>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>ID</Table.ColumnHeader>
-            <Table.ColumnHeader>Producto</Table.ColumnHeader>
-            <Table.ColumnHeader>Tipo</Table.ColumnHeader>
-            <Table.ColumnHeader>Cantidad</Table.ColumnHeader>
-            <Table.ColumnHeader>Fecha</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+      <Table.Root striped colorScheme="gray">
+        <TableCaption>Movimientos de Inventario</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableColumnHeader>ID</TableColumnHeader>
+            <TableColumnHeader>Producto</TableColumnHeader>
+            <TableColumnHeader>Tipo</TableColumnHeader>
+            <TableColumnHeader>Cantidad</TableColumnHeader>
+            <TableColumnHeader>Fecha</TableColumnHeader>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {movimientos.map((mov) => (
-            <Table.Row key={mov.id_movimiento}>
-              <Table.Cell>{mov.id_movimiento}</Table.Cell>
-              <Table.Cell>{productos.find(p => p.id_producto === mov.id_producto)?.nombre || mov.id_producto}</Table.Cell>
-              <Table.Cell>{mov.tipo_movimiento}</Table.Cell>
-              <Table.Cell>{mov.cantidad}</Table.Cell>
-              <Table.Cell>{new Date(mov.fecha_movimiento).toLocaleString()}</Table.Cell>
-            </Table.Row>
+            <TableRow key={mov.id_movimiento}>
+              <TableCell>{mov.id_movimiento}</TableCell>
+              <TableCell>{productos.find(p => p.id_producto === mov.id_producto.id_producto)?.nombre || mov.id_producto.id_producto || "-"}</TableCell>
+              <TableCell>{mov.tipo_movimiento}</TableCell>
+              <TableCell>{mov.cantidad}</TableCell>
+              <TableCell>{new Date(mov.fecha_movimiento).toLocaleString()}</TableCell>
+            </TableRow>
           ))}
-        </Table.Body>
+        </TableBody>
       </Table.Root>
     </Box>
   );
