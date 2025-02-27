@@ -18,7 +18,7 @@ interface UserFormProps {
 
 export const UserForm: React.FC<UserFormProps> = ({ user, onSuccess, onCancel }) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<Partial<Usuario>>({
-    defaultValues: user || {},
+    defaultValues: user || {}, // Valores iniciales basados en user
   });
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
@@ -31,23 +31,37 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSuccess, onCancel })
   }, []);
 
   // Actualizar los valores del formulario cuando cambie el usuario seleccionado
-  useEffect(() => {
-    reset(user || {}); // Resetear el formulario con los valores del usuario seleccionado
-  }, [user, reset]);
+useEffect(() => {
+    reset(user || {
+        nombre_completo: "",
+        email: "",
+        telefono: "",
+        password_hash: "",
+        id_empresa: undefined,
+        estado: undefined,
+    } as Partial<Usuario>); // Limpiar explícitamente todos los campos si user es null
+}, [user, reset]);
 
-  const onSubmit = async (data: Partial<Usuario>) => {
+const onSubmit = async (data: Partial<Usuario>) => {
     try {
-      if (user) {
-        await updateUsuario(user.id_usuario, data);
-      } else {
-        await createUsuario(data);
-      }
-      reset({}); // Limpiar formulario tras éxito
-      onSuccess();
+        if (user) {
+            await updateUsuario(user.id_usuario, data);
+        } else {
+            await createUsuario(data);
+        }
+        reset({
+            nombre_completo: "",
+            email: "",
+            telefono: "",
+            password_hash: "",
+            id_empresa: undefined,
+            estado: undefined,
+        } as Partial<Usuario>); // Limpiar formulario tras éxito
+        onSuccess();
     } catch (error) {
-      console.error("Error al guardar usuario:", error);
+        console.error("Error al guardar usuario:", error);
     }
-  };
+};
 
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>

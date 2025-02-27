@@ -37,7 +37,7 @@ export const Usuarios: React.FC = () => {
   };
 
   const handleNewUser = () => {
-    setSelectedUser(null);
+    setSelectedUser(null); // Esto debería limpiar el formulario gracias al useEffect en UserForm
   };
 
   return (
