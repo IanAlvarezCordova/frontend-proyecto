@@ -24,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/movimientos" element={<Movimientos />} />
           <Route path="/pedidos" element={<Pedidos />} />
+          
         </Routes>
       </Router>
     </ChakraProvider>

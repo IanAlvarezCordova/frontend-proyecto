@@ -13,6 +13,7 @@ export const Sidebar: React.FC = () => {
     { label: "Productos", path: "/productos" },
     { label: "Inventario", path: "/inventario" },
     { label: "Movimientos", path: "/movimientos" },
+    { label: "Pedidos", path: "/pedidos" },
   ];
 
   return (

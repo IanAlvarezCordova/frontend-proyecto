@@ -4,6 +4,7 @@ import { API_BASE_URL } from "./apiConfig";
 import { Producto } from "../types/types";
 import { getCategorias } from "./categoria.service";
 import { getEmpresas } from "./empresa.service";
+import { getMovimientos } from "./movimiento.service";
 
 const API_URL = `${API_BASE_URL}/producto`;
 
@@ -61,4 +62,17 @@ export const updateProducto = async (id: number, producto: Partial<Producto>): P
 
 export const deleteProducto = async (id: number): Promise<void> => {
   await axios.delete(`${API_URL}/${id}`);
+};
+
+// src/services/producto.service.ts (fragmento)
+export const getProductosWithStock = async (): Promise<Producto[]> => {
+  const [productos, movimientos] = await Promise.all([getProductos(), getMovimientos()]);
+  return productos.map((product) => {
+    const productMovements = movimientos.filter((mov) => mov.id_producto.id_producto === product.id_producto);
+    const stock = productMovements.reduce((total, mov) => {
+      const newTotal = mov.tipo_movimiento === "entrada" ? total + mov.cantidad : total - mov.cantidad;
+      return Math.max(0, newTotal); // Evitamos stock negativo
+    }, 0);
+    return { ...product, stock_actual: stock };
+  });
 };

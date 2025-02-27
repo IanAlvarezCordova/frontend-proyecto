@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell, TableColumnHeader } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react"; // Usamos @chakra-ui/table para consistencia
 import { getProductos, deleteProducto } from "../../services/producto.service";
 import { Producto } from "../../types/types";
 
@@ -60,36 +60,44 @@ export const ProductList: React.FC<ProductListProps> = ({ refresh, onEdit }) => 
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
       <Table.Root size="sm" striped colorScheme="gray">
-        <TableCaption>Lista de Productos</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableColumnHeader>ID</TableColumnHeader>
-            <TableColumnHeader>Nombre</TableColumnHeader>
-            <TableColumnHeader>Código</TableColumnHeader>
-            <TableColumnHeader>Categoría</TableColumnHeader>
-            <TableColumnHeader>Precio Venta</TableColumnHeader>
-            <TableColumnHeader>Acciones</TableColumnHeader>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <Table.Caption>Lista de Productos</Table.Caption>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>ID</Table.ColumnHeader>
+            <Table.ColumnHeader>Nombre</Table.ColumnHeader>
+            <Table.ColumnHeader>Código</Table.ColumnHeader>
+            <Table.ColumnHeader>Categoría</Table.ColumnHeader>
+            <Table.ColumnHeader>Empresa</Table.ColumnHeader>
+            <Table.ColumnHeader>Precio Compra</Table.ColumnHeader>
+            <Table.ColumnHeader>Precio Venta</Table.ColumnHeader>
+            <Table.ColumnHeader>Stock Mínimo</Table.ColumnHeader>
+            <Table.ColumnHeader>Stock Máximo</Table.ColumnHeader>
+            <Table.ColumnHeader>Acciones</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {productos.map((product) => (
-            <TableRow key={product.id_producto}>
-              <TableCell>{product.id_producto}</TableCell>
-              <TableCell>{product.nombre}</TableCell>
-              <TableCell>{product.codigo_barras}</TableCell>
-              <TableCell>{product.id_categoria?.nombre || product.id_categoria?.id_categoria || "-"}</TableCell>
-              <TableCell>{product.precio_venta}</TableCell>
-              <TableCell>
+            <Table.Row key={product.id_producto}>
+              <Table.Cell>{product.id_producto}</Table.Cell>
+              <Table.Cell>{product.nombre}</Table.Cell>
+              <Table.Cell>{product.codigo_barras}</Table.Cell>
+              <Table.Cell>{typeof product.id_categoria === "object" ? product.id_categoria.nombre : product.id_categoria}</Table.Cell>
+              <Table.Cell>{typeof product.id_empresa === "object" ? product.id_empresa.nombre : product.id_empresa}</Table.Cell>
+              <Table.Cell>{product.precio_compra}</Table.Cell>
+              <Table.Cell>{product.precio_venta}</Table.Cell>
+              <Table.Cell>{product.stock_minimo}</Table.Cell>
+              <Table.Cell>{product.stock_maximo}</Table.Cell>
+              <Table.Cell>
                 <Button size="sm" colorScheme="cyan" onClick={() => onEdit(product)}>
                   Editar
                 </Button>
                 <Button size="sm" colorScheme="red" ml={2} onClick={() => handleDelete(product.id_producto)}>
                   Eliminar
                 </Button>
-              </TableCell>
-            </TableRow>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </TableBody>
+        </Table.Body>
       </Table.Root>
     </Box>
   );

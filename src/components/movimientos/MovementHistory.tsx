@@ -2,22 +2,34 @@
 import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell, TableColumnHeader } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 import { getMovimientos } from "../../services/movimiento.service";
 import { MovimientoInventario } from "../../types/types";
 
 interface MovementHistoryProps {
-  refresh: boolean;
+  filters: { type?: string; date?: string };
+  refresh: boolean; // Añadimos refresh como prop
 }
 
-export const MovementHistory: React.FC<MovementHistoryProps> = ({ refresh }) => {
+export const MovementHistory: React.FC<MovementHistoryProps> = ({ filters, refresh }) => {
   const [movimientos, setMovimientos] = useState<MovimientoInventario[]>([]);
   const toast = useToast();
 
   const fetchData = async () => {
     try {
       const movimientosData = await getMovimientos();
-      setMovimientos(movimientosData);
+      let filteredMovimientos = movimientosData;
+      if (filters.type) {
+        filteredMovimientos = filteredMovimientos.filter((mov) =>
+          mov.tipo_movimiento.toLowerCase() === filters.type?.toLowerCase()
+        );
+      }
+      if (filters.date) {
+        filteredMovimientos = filteredMovimientos.filter((mov) =>
+          new Date(mov.fecha_movimiento).toISOString().split("T")[0] === filters.date
+        );
+      }
+      setMovimientos(filteredMovimientos);
     } catch (error) {
       toast({
         title: "Error",
@@ -31,34 +43,34 @@ export const MovementHistory: React.FC<MovementHistoryProps> = ({ refresh }) => 
 
   useEffect(() => {
     fetchData();
-  }, [refresh]);
+  }, [filters, refresh]); // Añadimos 'refresh' como dependencia
 
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
       <Table.Root size="sm" striped colorScheme="gray">
-        <TableCaption>Historial de Movimientos</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableColumnHeader>ID</TableColumnHeader>
-            <TableColumnHeader>Producto</TableColumnHeader>
-            <TableColumnHeader>Tipo</TableColumnHeader>
-            <TableColumnHeader>Cantidad</TableColumnHeader>
-            <TableColumnHeader>Fecha</TableColumnHeader>
-            <TableColumnHeader>Motivo</TableColumnHeader>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <Table.Caption>Historial de Movimientos</Table.Caption>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>ID</Table.ColumnHeader>
+            <Table.ColumnHeader>Producto</Table.ColumnHeader>
+            <Table.ColumnHeader>Tipo</Table.ColumnHeader>
+            <Table.ColumnHeader>Cantidad</Table.ColumnHeader>
+            <Table.ColumnHeader>Fecha</Table.ColumnHeader>
+            <Table.ColumnHeader>Motivo</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {movimientos.map((mov) => (
-            <TableRow key={mov.id_movimiento}>
-              <TableCell>{mov.id_movimiento}</TableCell>
-              <TableCell>{mov.id_producto?.nombre || mov.id_producto?.id_producto || "-"}</TableCell>
-              <TableCell>{mov.tipo_movimiento}</TableCell>
-              <TableCell>{mov.cantidad}</TableCell>
-              <TableCell>{new Date(mov.fecha_movimiento).toLocaleString()}</TableCell>
-              <TableCell>{mov.motivo}</TableCell>
-            </TableRow>
+            <Table.Row key={mov.id_movimiento}>
+              <Table.Cell>{mov.id_movimiento}</Table.Cell>
+              <Table.Cell>{typeof mov.id_producto === "object" ? mov.id_producto.nombre : mov.id_producto}</Table.Cell>
+              <Table.Cell>{mov.tipo_movimiento}</Table.Cell>
+              <Table.Cell>{mov.cantidad}</Table.Cell>
+              <Table.Cell>{new Date(mov.fecha_movimiento).toLocaleString()}</Table.Cell>
+              <Table.Cell>{mov.motivo}</Table.Cell>
+            </Table.Row>
           ))}
-        </TableBody>
+        </Table.Body>
       </Table.Root>
     </Box>
   );

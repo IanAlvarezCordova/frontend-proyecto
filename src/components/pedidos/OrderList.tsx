@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell, TableColumnHeader } from "@chakra-ui/react";
+import { Table } from "@chakra-ui/react";
 import { getPedidos, deletePedido } from "../../services/pedido.service";
 import { Pedido } from "../../types/types";
 
@@ -60,34 +60,36 @@ export const OrderList: React.FC<OrderListProps> = ({ refresh, onEdit }) => {
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
       <Table.Root size="sm" striped colorScheme="gray">
-        <TableCaption>Lista de Pedidos</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableColumnHeader>ID</TableColumnHeader>
-            <TableColumnHeader>Empresa</TableColumnHeader>
-            <TableColumnHeader>Fecha Solicitud</TableColumnHeader>
-            <TableColumnHeader>Estado</TableColumnHeader>
-            <TableColumnHeader>Acciones</TableColumnHeader>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pedidos.map((order) => (
-            <TableRow key={order.id_pedido}>
-              <TableCell>{order.id_pedido}</TableCell>
-              <TableCell>{order.id_empresa?.nombre || order.id_empresa?.id_empresa || "-"}</TableCell>
-              <TableCell>{new Date(order.fecha_solicitud).toLocaleString()}</TableCell>
-              <TableCell>{order.estado}</TableCell>
-              <TableCell>
-                <Button size="sm" colorScheme="cyan" onClick={() => onEdit(order)}>
+        <Table.Caption>Lista de Pedidos</Table.Caption>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>ID</Table.ColumnHeader>
+            <Table.ColumnHeader>Empresa</Table.ColumnHeader>
+            <Table.ColumnHeader>Fecha Solicitud</Table.ColumnHeader>
+            <Table.ColumnHeader>Fecha Entrega</Table.ColumnHeader>
+            <Table.ColumnHeader>Estado</Table.ColumnHeader>
+            <Table.ColumnHeader>Acciones</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {pedidos.map((pedido) => (
+            <Table.Row key={pedido.id_pedido}>
+              <Table.Cell>{pedido.id_pedido}</Table.Cell>
+              <Table.Cell>{typeof pedido.id_empresa === "object" ? pedido.id_empresa.nombre : pedido.id_empresa}</Table.Cell>
+              <Table.Cell>{new Date(pedido.fecha_solicitud).toLocaleDateString()}</Table.Cell>
+              <Table.Cell>{new Date(pedido.fecha_entrega).toLocaleDateString()}</Table.Cell>
+              <Table.Cell>{pedido.estado}</Table.Cell>
+              <Table.Cell>
+                <Button size="sm" colorScheme="cyan" onClick={() => onEdit(pedido)}>
                   Editar
                 </Button>
-                <Button size="sm" colorScheme="red" ml={2} onClick={() => handleDelete(order.id_pedido)}>
+                <Button size="sm" colorScheme="red" ml={2} onClick={() => handleDelete(pedido.id_pedido)}>
                   Eliminar
                 </Button>
-              </TableCell>
-            </TableRow>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </TableBody>
+        </Table.Body>
       </Table.Root>
     </Box>
   );

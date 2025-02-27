@@ -8,14 +8,21 @@ import { Select } from "@chakra-ui/select";
 import { useForm } from "react-hook-form";
 import { createMovimiento } from "../../services/movimiento.service";
 import { getProductos } from "../../services/producto.service";
-import { MovimientoInventario, Producto, Usuario } from "../../types/types";
+import { MovimientoInventario, Producto } from "../../types/types";
 
 interface MovementFormProps {
   onSuccess: () => void;
 }
 
 export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<Partial<MovimientoInventario>>({});
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<Partial<MovimientoInventario>>({
+    defaultValues: {
+      id_producto: undefined,
+      tipo_movimiento: undefined,
+      cantidad: undefined,
+      motivo: "",
+    },
+  });
   const [productos, setProductos] = useState<Producto[]>([]);
   const toast = useToast();
 
@@ -35,14 +42,16 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
       }
     };
     fetchProductos();
-  }, []);
+  }, [toast]);
 
   const onSubmit = async (data: Partial<MovimientoInventario>) => {
     try {
-      await createMovimiento({
+      const movimientoData: Partial<MovimientoInventario> = {
         ...data,
-        id_usuario: { id_usuario: 1 } as Usuario, // Objeto mínimo para el MVP
-      });
+        id_usuario: { id_usuario: 1 }, // Solo el ID, permitido por Partial<Usuario>
+        fecha_movimiento: new Date().toISOString(), // Fecha actual
+      };
+      await createMovimiento(movimientoData);
       reset({
         id_producto: undefined,
         tipo_movimiento: undefined,
@@ -58,6 +67,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
         isClosable: true,
       });
     } catch (error) {
+      console.error("Error al registrar movimiento:", error);
       toast({
         title: "Error",
         description: "No se pudo registrar el movimiento.",
@@ -83,7 +93,7 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
                 </option>
               ))}
             </Select>
-            <FormErrorMessage>{errors.id_producto?.message as string}</FormErrorMessage>
+            <FormErrorMessage>{errors.id_producto?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.tipo_movimiento}>
             <FormLabel>Tipo de Movimiento</FormLabel>
@@ -93,17 +103,17 @@ export const MovementForm: React.FC<MovementFormProps> = ({ onSuccess }) => {
               <option value="salida">Salida</option>
               <option value="ajuste">Ajuste</option>
             </Select>
-            <FormErrorMessage>{errors.tipo_movimiento?.message as string}</FormErrorMessage>
+            <FormErrorMessage>{errors.tipo_movimiento?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.cantidad}>
             <FormLabel>Cantidad</FormLabel>
             <Input type="number" {...register("cantidad", { required: "Cantidad es obligatoria" })} />
-            <FormErrorMessage>{errors.cantidad?.message as string}</FormErrorMessage>
+            <FormErrorMessage>{errors.cantidad?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.motivo}>
             <FormLabel>Motivo</FormLabel>
             <Input {...register("motivo", { required: "Motivo es obligatorio" })} />
-            <FormErrorMessage>{errors.motivo?.message as string}</FormErrorMessage>
+            <FormErrorMessage>{errors.motivo?.message}</FormErrorMessage>
           </FormControl>
           <Button type="submit" colorScheme="teal" width="full">
             Registrar

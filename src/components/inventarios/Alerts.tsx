@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Box, Text } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { getProductos } from "../../services/producto.service";
+import { getProductosWithStock } from "../../services/producto.service";
 import { Producto } from "../../types/types";
 
 export const Alerts: React.FC = () => {
@@ -12,8 +12,8 @@ export const Alerts: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productosData = await getProductos();
-        const lowStock = productosData.filter((p) => p.stock_minimo && p.stock_minimo > 0 && p.stock_minimo > p.stock_maximo);
+        const productosData = await getProductosWithStock();
+        const lowStock = productosData.filter((p) => p.stock_actual! < p.stock_minimo);
         setLowStockProducts(lowStock);
         if (lowStock.length > 0) {
           toast({
@@ -35,15 +35,16 @@ export const Alerts: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [toast]);
 
   return (
     <Box mt={6} borderWidth={1} borderRadius="md" p={4}>
       <Text fontWeight="bold" mb={2}>Alertas de Stock Bajo</Text>
       {lowStockProducts.length > 0 ? (
         lowStockProducts.map((product) => (
-          <Text key={product.id_producto} color="red.500">
-            {product.nombre} - Stock: {product.stock_maximo} (Mínimo: {product.stock_minimo})
+          <Text key={product.id_producto} color={product.stock_actual! < 0 ? "red.700" : "red.500"}>
+            {product.nombre} - Stock Actual: {product.stock_actual} (Mínimo: {product.stock_minimo})
+            {product.stock_actual! < 0 && " (Stock Negativo)"}
           </Text>
         ))
       ) : (

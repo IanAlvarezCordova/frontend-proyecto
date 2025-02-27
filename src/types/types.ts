@@ -51,25 +51,26 @@ export interface Empresa {
     productos?: Producto[];
   }
   
-  // Entidad Producto
-  export interface Producto {
-    id_producto: number;
-    codigo_barras: string;
-    nombre: string;
-    descripcion: string;
-    id_categoria: Categoria;
-    precio_compra: number;
-    precio_venta: number;
-    stock_minimo: number;
-    stock_maximo: number;
-    id_empresa: Empresa;
-    id_proveedor: Proveedor | null;
-    fecha_creacion: string;
-    ultima_actualizacion: string;
-    alertas?: AlertaStock[];
-    detalles?: DetallePedido[];
-    movimientos?: MovimientoInventario[];
-  }
+// src/types/types.ts (fragmento)
+export interface Producto {
+  id_producto: number;
+  codigo_barras: string;
+  nombre: string;
+  descripcion: string;
+  id_categoria: number | Categoria;
+  precio_compra: number;
+  precio_venta: number;
+  stock_minimo: number;
+  stock_maximo: number;
+  id_empresa: number | Empresa;
+  id_proveedor: number | Proveedor | null;
+  fecha_creacion: string;
+  ultima_actualizacion: string;
+  alertas?: AlertaStock[];
+  detalles?: DetallePedido[];
+  movimientos?: MovimientoInventario[];
+  stock_actual?: number; // Añadido para reflejar el cálculo
+}
   
   // Entidad Inventario
   export interface Inventario {
@@ -78,18 +79,18 @@ export interface Empresa {
     fecha_actualizacion: string;
   }
   
-  // Entidad Movimiento_Inventario
-  export interface MovimientoInventario {
-    id_movimiento: number;
-    id_producto: Producto;
-    tipo_movimiento: "entrada" | "salida" | "ajuste";
-    cantidad: number;
-    fecha_movimiento: string;
-    motivo: string;
-    id_usuario: Usuario;
-    costo_unitario: number;
-    ubicacion: string;
-  }
+// src/types/types.ts (fragmento)
+export interface MovimientoInventario {
+  id_movimiento: number;
+  id_producto: Producto; // Espera un objeto Producto completo
+  tipo_movimiento: "entrada" | "salida" | "ajuste";
+  cantidad: number;
+  fecha_movimiento: string;
+  motivo: string;
+  id_usuario: Partial<Usuario>;
+  costo_unitario: number;
+  ubicacion: string;
+}
   
   // Entidad Pedido
   export interface Pedido {

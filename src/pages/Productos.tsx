@@ -11,7 +11,7 @@ export const Productos: React.FC = () => {
 
   const handleSuccess = () => {
     setRefresh((prev) => !prev);
-    setSelectedProduct(null);
+    setSelectedProduct(null); // Esto limpia el formulario al establecer null
   };
 
   const handleEdit = (product: Producto) => {
@@ -19,11 +19,11 @@ export const Productos: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setSelectedProduct(null);
+    setSelectedProduct(null); // Esto limpia el formulario al establecer null
   };
 
   const handleNewProduct = () => {
-    setSelectedProduct(null);
+    setSelectedProduct(null); // Esto asegura un formulario limpio para un nuevo producto
   };
 
   return (
@@ -35,7 +35,9 @@ export const Productos: React.FC = () => {
         Nuevo Producto
       </Button>
       <ProductList refresh={refresh} onEdit={handleEdit} />
-      <ProductForm product={selectedProduct} onSuccess={handleSuccess} onCancel={handleCancel} />
+      {selectedProduct !== null || !selectedProduct ? (
+        <ProductForm product={selectedProduct} onSuccess={handleSuccess} onCancel={handleCancel} />
+      ) : null}
     </Box>
   );
 };
